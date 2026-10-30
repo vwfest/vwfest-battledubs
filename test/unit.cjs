@@ -45,3 +45,16 @@ ok(hard < 60 && easy < 90, 'AI finishes games efficiently, never repeats a shot'
 ok(cleanName('Rusty_Bug-67') === 'Rusty_Bug-67', 'clean nickname accepted');
 for (const b of ['ab', 'x'.repeat(15), 'fuck', 'f u c k', 'sh1t', 'a<b>c', 'Admin', 'cpu easy', '  ', 'nig.ger', 'He llo!!', 'ṕ̴']) ok(cleanName(b) === null, 'rejected nickname: ' + JSON.stringify(b));
 console.log(`unit: ${n} checks passed`);
+
+// persistence: stats survive a restart (embedded Postgres on disk)
+(async () => {
+  const fs = require('fs'), dir = '/tmp/bd-persist-' + process.pid; fs.rmSync(dir, { recursive: true, force: true });
+  process.env.USE_PGLITE = '1'; process.env.PGLITE_DIR = dir; delete process.env.DATABASE_URL;
+  const { Store } = require('../lib/store');
+  let s = new Store(); await s.init(); const a = s.create('a', 'Alpha', '🐞', 'h1'), b = s.create('b', 'Beta', '🚐', 'h2');
+  s.recordPvp(a, b, 0, 'sunk', { shots: 30, hits: 17, kills: 5 }, { shots: 30, hits: 9, kills: 2 }, true); await s.shutdown();
+  s = new Store(); await s.init(); const lb = s.leaderboard();
+  ok(lb.length === 2 && lb[0].nick === 'Alpha' && lb[0].wins === 1 && lb[0].acc === 57 && lb[0].kills === 5 && lb[1].losses === 1, 'leaderboard stats persist across a restart');
+  ok(s.pairCount('a', 'b') === 1 && s.pairOk('a', 'b'), 'pair-cap history persists across a restart');
+  await s.shutdown(); fs.rmSync(dir, { recursive: true, force: true }); console.log(`unit (persistence): ${n} checks total`); process.exit(0);
+})();
