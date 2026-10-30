@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: vwfest-battledubs
+    runtime: node
+    plan: free
+    region: ohio
+    buildCommand: npm install --omit=dev
+    startCommand: npm start
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: 20
+      - key: DB_SCHEMA
+        value: battledubs
+      - key: DATABASE_URL
+        sync: false

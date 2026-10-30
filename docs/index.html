@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https://vwfestmemecoin.com; font-src 'self' data:; connect-src 'self' wss://*.onrender.com ws://127.0.0.1:* ws://localhost:*; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="theme-color" content="#050505">
+<title>BATTLE DUBS — air-cooled VW Battleship · $VWFEST Arcade Room</title>
+<meta name="description" content="BATTLE DUBS: launch mortars and knock out a parking lot full of Beetles, Karmann Ghias and VW buses. Free, nickname only, live leaderboard. Part of the $VWFEST Arcade Room.">
+<link rel="icon" href="https://vwfestmemecoin.com/gallery/favicons/favicon.png">
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+<div class="bgfx"></div>
+<header class="top">
+  <a class="brand" href="./"><span class="brand-ic">🚐</span> BATTLE <b>DUBS</b></a>
+  <nav class="nav">
+    <a href="https://vwfest.github.io/vwfest-arcade/" rel="noopener">← Arcade Room</a>
+    <a href="https://vwfestmemecoin.com" rel="noopener">$VWFEST</a>
+  </nav>
+  <div class="tools"><span id="conn" class="pill">connecting…</span><button id="muteBtn" class="icon" type="button" title="Sound on/off" aria-label="Toggle sound">🔊</button></div>
+</header>
+
+<main>
+  <!-- ============ LOBBY ============ -->
+  <section id="vLobby" class="view">
+    <div class="hero">
+      <p class="hero-tag"><span class="live-dot"></span> LIVE · FREE · NICKNAME ONLY</p>
+      <h1 class="title"><span>BATTLE</span> <span class="gold">DUBS</span></h1>
+      <p class="sub">Hide your <b>air-cooled fleet</b> in the parking lot. Launch mortars. <b>Knock out their dubs.</b></p>
+      <div class="bulbs" aria-hidden="true"></div>
+      <p class="livebar"><span class="pill live">● LIVE</span> <span id="cOnline">0</span> online · <span id="cBattles">0</span> battles · <span id="cQueue">0</span> searching</p>
+    </div>
+
+    <div class="cols">
+      <div class="col">
+        <div class="card" id="profileCard">
+          <h2>Your profile</h2>
+          <div id="guestForm">
+            <label class="label" for="nick">Nickname</label>
+            <input id="nick" type="text" maxlength="14" minlength="3" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="e.g. RustyBeetle67">
+            <label class="label">Pick your VW</label>
+            <div id="avatars" class="avatars" role="radiogroup" aria-label="Avatar"></div>
+            <button id="enterBtn" class="btn big" type="button">Enter the lot</button>
+            <p id="nickErr" class="err" role="alert"></p>
+            <p class="tiny">No sign-up. Your nickname is saved on this device so it stays yours. 3–14 letters, numbers, spaces, _ or -.</p>
+          </div>
+          <div id="meBox" hidden>
+            <div class="meHead"><span id="meAv" class="bigav"></span><div><b id="meNick" class="meNick"></b><div class="tiny" id="meRank"></div></div><button id="avBtn" class="btn small ghost" type="button">Change VW</button></div>
+            <div class="stats" id="meStats"></div>
+            <div id="avPick" class="avatars" hidden></div>
+            <p class="tiny" id="meCpu"></p>
+          </div>
+        </div>
+
+        <div class="card" id="playCard">
+          <h2>Pick a fight</h2>
+          <button id="quickBtn" class="btn big" type="button" disabled>⚡ Quick match</button>
+          <p id="queueNote" class="tiny" hidden></p>
+          <div class="row2">
+            <button id="cpuEasy" class="btn ghost" type="button" disabled>🤖 vs CPU · Easy</button>
+            <button id="cpuHard" class="btn ghost" type="button" disabled>🤖 vs CPU · Hard</button>
+          </div>
+          <p class="tiny">Live matches vs other players count on the leaderboard. CPU games are just for practice.</p>
+        </div>
+
+        <div class="card">
+          <h2>Players online <span class="pill" id="onlineN">0</span></h2>
+          <ul id="onlineList" class="plist"><li class="muted">Nobody here yet. Be the first!</li></ul>
+        </div>
+      </div>
+
+      <div class="col wide">
+        <div class="card lbcard">
+          <h2>🏆 Leaderboard <span class="pill live">● LIVE</span></h2>
+          <div class="tablewrap"><table id="lb" class="lb"><thead><tr><th>#</th><th>Driver</th><th>W</th><th>L</th><th>Win%</th><th>Acc%</th><th>KOs</th></tr></thead><tbody><tr><td colspan="7" class="muted">Waking the arcade…</td></tr></tbody></table></div>
+          <p class="tiny">Ranked by wins, then win rate, then accuracy. Only live player-vs-player games count. KOs = dubs knocked out.</p>
+        </div>
+        <div class="card">
+          <h2>⚔️ Battles live now</h2>
+          <ul id="liveList" class="plist"><li class="muted">No battles right now.</li></ul>
+        </div>
+        <div class="card">
+          <h2>📣 Latest</h2>
+          <ul id="feedList" class="plist"><li class="muted">Quiet in the lot…</li></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card how">
+      <h2>How to play</h2>
+      <ol>
+        <li><b>Park your fleet</b> on the 10×10 lot: a Samba Bus (5), Kombi Bus (4), Karmann Ghia (3), Beetle (3) and Baby Bug (2). Tap a dub, tap the lot, rotate with R.</li>
+        <li><b>Take turns launching mortars.</b> Pick a square on the enemy lot. A miss leaves a pothole. A hit sets a dub on fire.</li>
+        <li><b>Knock out every dub</b> before they get yours. 30 seconds a turn.</li>
+      </ol>
+      <p class="tiny">Fair play: fleets stay on the server, so nobody can peek. Disconnect and you have 20 seconds to come back before you forfeit. Repeat games between the same two players stop counting after a few per day.</p>
+    </div>
+  </section>
+
+  <!-- ============ SETUP ============ -->
+  <section id="vSetup" class="view" hidden>
+    <div class="vsbar"><span class="vs"><span id="sMeAv"></span> <b id="sMeNick"></b></span><span class="vsx">VS</span><span class="vs"><span id="sOppAv"></span> <b id="sOppNick"></b></span></div>
+    <h2 class="center">Park your dubs <span class="pill" id="setupTimer">75s</span></h2>
+    <div class="setupgrid">
+      <div class="cwrap"><canvas id="cSetup" class="lot" aria-label="Your parking lot"></canvas></div>
+      <div class="card tray">
+        <p class="tiny" id="setupHelp">Pick a dub, then click the lot to park it. Right-click or R to rotate.</p>
+        <div id="trayList" class="trayList"></div>
+        <div class="row2"><button id="rotBtn" class="btn ghost small" type="button">↻ Rotate (R)</button><button id="randBtn" class="btn ghost small" type="button">🎲 Random</button></div>
+        <div class="row2"><button id="clrBtn" class="btn ghost small" type="button">Clear</button><button id="leaveSetup" class="btn ghost small" type="button">Leave</button></div>
+        <button id="readyBtn" class="btn big" type="button" disabled>READY</button>
+        <p id="setupStatus" class="tiny"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BATTLE ============ -->
+  <section id="vBattle" class="view" hidden>
+    <div class="hud">
+      <div class="who me"><span id="hMeAv" class="bigav"></span><div><b id="hMeNick"></b><div class="pips" id="hMePips"></div></div></div>
+      <div class="mid"><div id="turnTxt" class="turnTxt">…</div><div class="tbar"><i id="tbar"></i></div><div class="tiny" id="turnSub"></div></div>
+      <div class="who opp"><div class="r"><b id="hOppNick"></b><div class="pips" id="hOppPips"></div></div><span id="hOppAv" class="bigav"></span><div id="bubble" class="bubble" hidden></div></div>
+    </div>
+    <div class="boards">
+      <div class="bwrap">
+        <h3>ENEMY LOT <span class="tiny" id="enemyHint">fire at a square</span></h3>
+        <div class="cwrap"><canvas id="cEnemy" class="lot" aria-label="Enemy parking lot. Click a square to fire a mortar."></canvas><div id="banner" class="banner" hidden></div></div>
+        <div id="enemyFleet" class="chips"></div>
+        <button id="fireBtn" class="btn big fire" type="button" disabled>🎯 FIRE MORTAR</button>
+      </div>
+      <div class="bwrap mine">
+        <h3>YOUR LOT</h3>
+        <div class="cwrap"><canvas id="cMine" class="lot" aria-label="Your parking lot"></canvas></div>
+        <div id="myFleet" class="chips"></div>
+      </div>
+    </div>
+    <div class="under card">
+      <ul id="log" class="log"></ul>
+      <div id="taunts" class="taunts"></div>
+      <button id="forfeitBtn" class="btn ghost small" type="button">🏳️ Forfeit</button>
+    </div>
+  </section>
+</main>
+
+<div id="over" class="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="overTitle">
+  <div class="overbox">
+    <h2 id="overTitle" class="overTitle">VICTORY</h2>
+    <p id="overSub" class="overSub"></p>
+    <div id="overStats" class="stats"></div>
+    <p id="overNote" class="tiny"></p>
+    <div class="row2"><button id="rematchBtn" class="btn" type="button">🔁 Rematch</button><button id="againBtn" class="btn ghost" type="button">🤖 Play CPU</button></div>
+    <button id="lobbyBtn" class="btn ghost" type="button">← Back to the lobby</button>
+  </div>
+</div>
+<div id="chals" class="chals" aria-live="polite"></div>
+<div id="toasts" class="toasts" aria-live="polite"></div>
+<footer><p class="fine">Just for fun. Free to play, no wallet, no prizes, bragging rights only. $VWFEST is a community-driven meme coin. Not financial advice. <a href="https://vwfest.github.io/vwfest-arcade/" rel="noopener">← Arcade Room</a></p></footer>
+<script type="module" src="js/main.js?v=1"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "name": "vwfest-battledubs",
+  "version": "1.0.0",
+  "description": "BATTLE DUBS — Battleship with air-cooled VWs in a parking lot, for the $VWFEST Arcade Room (free, nickname only)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/unit.cjs && node test/e2e.cjs"
+  },
+  "type": "commonjs",
+  "dependencies": {
+    "compression": "^1.8.2",
+    "express": "^5.3.0",
+    "express-rate-limit": "^8.7.2",
+    "helmet": "^8.3.0",
+    "pg": "^8.23.1",
+    "ws": "^8.22.0"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.13",
+    "playwright": "^1.64.1"
+  },
+  "engines": { "node": ">=20" },
+  "private": true
+}
