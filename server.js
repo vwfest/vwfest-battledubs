@@ -10,6 +10,7 @@ const { WebSocketServer } = require('ws');
 const { Store } = require('./lib/store');
 const { Match } = require('./lib/match');
 const { cleanName, nickKey } = require('./lib/names');
+const { clientIp, useClientIp } = require('./lib/clientip');
 
 const PROD = process.env.NODE_ENV === 'production';
 const num = (v, d) => (v === undefined || v === '' || !Number.isFinite(+v) ? d : +v);
@@ -73,6 +74,7 @@ setInterval(() => { for (const [k, p] of online) if (!p.conn && (!p.match || p.m
 // ---------- http ----------
 const app = express();
 app.set('trust proxy', 1); app.disable('x-powered-by');
+useClientIp(app);
 app.use(helmet({
   contentSecurityPolicy: {
     useDefaults: false,
@@ -100,7 +102,8 @@ app.use((req, res) => res.status(404).type('text').send('Not found'));
 
 const server = http.createServer(app);
 const wss = new WebSocketServer({ noServer: true, maxPayload: 2048, perMessageDeflate: false });
-const ipOf = (req) => String((req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket.remoteAddress || '?').slice(0, 64);
+// Real client address: X-Forwarded-For's FIRST entry is client-controlled (it let anyone dodge the per-IP caps by rotating it), so use CF-Connecting-IP / the entry before the Cloudflare edge.
+const ipOf = (req) => String(clientIp(req) || '?').slice(0, 64);
 server.on('upgrade', (req, socket, head) => {
   const reject = (code, msg) => { socket.write(`HTTP/1.1 ${code} ${msg}\r\nConnection: close\r\n\r\n`); socket.destroy(); };
   let url; try { url = new URL(req.url, 'http://x'); } catch { return reject(400, 'Bad Request'); }
