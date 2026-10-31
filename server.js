@@ -80,7 +80,7 @@ app.use(helmet({
     useDefaults: false,
     directives: {
       defaultSrc: ["'self'"], scriptSrc: ["'self'"], styleSrc: ["'self'"], imgSrc: ["'self'", 'data:', 'https://vwfestmemecoin.com'], fontSrc: ["'self'", 'data:'],
-      connectSrc: ["'self'", 'wss://*.onrender.com', ...(PROD ? [] : ['ws://127.0.0.1:*', 'ws://localhost:*'])],
+      connectSrc: ["'self'", 'wss://vwfest-battledubs.onrender.com', ...(PROD ? [] : ['ws://127.0.0.1:*', 'ws://localhost:*'])],
       objectSrc: ["'none'"], baseUri: ["'none'"], formAction: ["'none'"], frameAncestors: ["'self'", 'https://vwfest.github.io', 'https://vwfestmemecoin.com'],
       upgradeInsecureRequests: PROD ? [] : null,
     },
