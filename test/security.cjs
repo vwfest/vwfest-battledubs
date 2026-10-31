@@ -60,6 +60,7 @@ const FLEET = [[0, 5], [1, 4], [2, 3], [3, 3], [4, 2]]; const fleet = FLEET.map(
   const top = await (await fetch(B + '/api/top')).json(); ok(top.ok && !JSON.stringify(top).match(/secret|hash/i), '/api/top leaks no secrets');
   const hh = await fetch(B + '/'); const csp = hh.headers.get('content-security-policy') || '';
   ok(!/script-src[^;]*unsafe-inline/.test(csp) && !hh.headers.get('x-powered-by'), 'CSP without inline scripts, no X-Powered-By');
+  ok(/camera=\(\)/.test(hh.headers.get('permissions-policy') || ''), 'Permissions-Policy header present');
   const post = await fetch(B + '/api/top', { method: 'POST' }); ok(post.status === 405, 'non-GET methods refused');
   console.log(fails ? `\n${fails} FAILED` : '\nALL PASSED'); srv.kill(); process.exit(fails ? 1 : 0);
 })().catch(e => { console.error(e); srv.kill(); process.exit(1); });

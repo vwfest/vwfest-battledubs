@@ -88,6 +88,7 @@ app.use(helmet({
   crossOriginEmbedderPolicy: false, crossOriginResourcePolicy: { policy: 'cross-origin' }, frameguard: false,
   referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
 }));
+app.use((req, res, next) => { res.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()'); next(); });
 app.use(compression());
 const cors = (req, res, next) => { const o = req.get('origin'); if (o && ORIGINS.has(o)) { res.set('Access-Control-Allow-Origin', o); res.set('Vary', 'Origin'); } next(); };
 app.get('/healthz', (req, res) => res.type('text').send('ok'));
